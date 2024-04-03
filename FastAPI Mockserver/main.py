@@ -5,8 +5,17 @@ from typing import Optional
 
 app = FastAPI()
 
+def generate_token(length=18):
+    """Generate a random token of specified length."""
+    # Define a string containing all possible characters for the token
+    characters = "0123456789"
+    # Generate the token by randomly selecting characters from the defined string
+    token = ''.join(random.choice(characters) for _ in range(length))
+    return token
+
+
 # Secret token
-SECRET_TOKEN = "BUWE8374324234324324"
+SECRET_TOKEN = generate_token()
 
 class Message(BaseModel):
     atlpSubmissionID: str
@@ -31,13 +40,17 @@ async def process_message(
     authorization: str = Header(None),
     content_type: str = Header(None),
 ):
-    if authorization:
+    try:
+      if authorization:
         verify_token(authorization)
-    elif token:
+      elif token:
         verify_token(token)
-    else:
+      else:
         raise HTTPException(status_code=401, detail="Missing token")
-    
+    except Exception:
+    # Handle exceptions raised during token verification
+     raise HTTPException(status_code=401, detail={"detail": "Invalid token", "Correct token is": SECRET_TOKEN})
+
     message_id = generate_message_id()
     
     # Accessing headers

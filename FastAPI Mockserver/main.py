@@ -3,6 +3,9 @@ from fastapi import FastAPI, HTTPException, Header, Request
 from pydantic import BaseModel
 from typing import Optional
 
+# Run unicorn your_module_name:app --port 8081 --reload
+# Run uvicorn main:app --port 8083 --reload
+
 app = FastAPI()
 
 def generate_token(length=18):
